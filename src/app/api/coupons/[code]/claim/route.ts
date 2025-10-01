@@ -83,7 +83,7 @@ export async function PUT(
     };
 
     // update the individual points of the user
-    for (let pointType in coupon.points) {
+    for (const pointType in coupon.points) {
       user = {
         ...user,
         individualPoints: {

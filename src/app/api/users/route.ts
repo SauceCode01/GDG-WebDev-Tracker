@@ -35,10 +35,10 @@ export async function GET(req: NextRequest) {
 
     // Return data + lastDoc for next page
     return NextResponse.json(data, { status: 200 });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error(err);
     return NextResponse.json(
-      { error: err.message || "Internal Server Error" },
+      { error:  "Internal Server Error" },
       { status: 500 }
     );
   }

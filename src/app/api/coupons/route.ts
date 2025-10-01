@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    let code = await generateCouponCode();
+    const code = await generateCouponCode();
 
     // building complete data
     const data = {
@@ -72,10 +72,10 @@ export async function GET(req: NextRequest) {
     }));
 
     return NextResponse.json(data, { status: 200 });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error(err);
     return NextResponse.json(
-      { error: err.message || "Internal Server Error" },
+      { error: "Internal Server Error" },
       { status: 500 }
     );
   }
