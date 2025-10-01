@@ -11,6 +11,11 @@ export const getCoupon = async (code: string) => {
   });
 
   const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.error)
+  }
+
   console.log(data);
   return data;
 }
@@ -22,6 +27,11 @@ export const getCoupons = async (limit: number, lastCode?: string) => {
   });
 
   const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.error)
+  }
+
   console.log(data);
   return data;
 }
@@ -41,7 +51,13 @@ export const claimCoupon = async (code: string, email?: string) => {
   });
 
   const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.error)
+  }
+
   console.log(data);
+  return data
 };
 
 
@@ -51,7 +67,13 @@ export const voidCoupon = async (code: string) => {
   });
 
   const data = await res.json();
-  console.log(data);
+  console.log("voidCoupon", data);
+
+  if (!res.ok) {
+    throw new Error(data.error)
+  }
+
+  return data
 }
 
 export const createCoupon = async (coupon: Coupon)    => {
@@ -62,6 +84,11 @@ export const createCoupon = async (coupon: Coupon)    => {
 
   const data = await res.json();
   console.log(data);
+
+  if (!res.ok) {
+    throw new Error(data.error)
+  }
+
   return data;
 }
 

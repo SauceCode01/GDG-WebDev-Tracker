@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { adminAuth, adminDb } from "@/lib/firebase/firebaseAdmin";
-import { generateCouponCode } from "@/lib/utils";
-import { User } from "@/types/User";
-import { extractUid, getUserWithUid, initializeUser } from "@/lib/serverUtils";
+import { adminAuth, adminDb } from "@/lib/firebase/firebaseAdmin"; 
  
 /**
  * Gets a paginated list of users
@@ -41,7 +38,7 @@ export async function GET(req: NextRequest) {
   } catch (err: any) {
     console.error(err);
     return NextResponse.json(
-      { message: err.message || "Internal Server Error" },
+      { error: err.message || "Internal Server Error" },
       { status: 500 }
     );
   }

@@ -1,103 +1,91 @@
 "use client";
 
-import { Coupon } from "@/types/Coupon";
-import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
-import React from "react";
-import CouponForm from "./_components/CouponForm";
-import CouponViewer from "./_components/CouponViewer";
-import CouponList from "./_components/CouponList";
-import { db } from "@/lib/firebase/firebase";
-import {
-  getFirestore,
-  collection,
-  addDoc,
-  setDoc,
-  doc,
-} from "firebase/firestore";
+import React, { useState } from "react";
+import ClaimCoupon from "./_components/ClaimCoupon";
+import Leaderboards from "./_components/Leaderboards";
+import { HeaderComponent } from "./_components/HeaderComponent";
 import { useAuthStore } from "@/stores/authStore";
-import { wrappedFetch } from "@/lib/utils";
+import { useUserQuery } from "@/lib/queries/userQueries";
+import CouponGenerator from "./_components/CouponGenerator";
+import CouponManager from "./_components/CouponManager";
 
 export const HomePage = () => {
-  const {user, token, authState, error,loginWithGoogle, logout} = useAuthStore();
+  const [currentTab, setCurrentTab] = useState("leaderboards");
 
+  const { user, token, authState, error, loginWithGoogle, logout } =
+    useAuthStore();
 
-  const queryClient = useQueryClient();
+  const { user: userData } = useUserQuery(user?.uid);
 
-  const handleClaimCoupon = async () => {
-    const code = "ABC123";
-    const uid = "erwin";
-
-    const res = await fetch(`/api/coupons/${code}/claim?uid=${uid}`, {
-      method: "PUT",
-    });
-
-    const data = await res.json();
-    console.log(data);
-
-    queryClient.invalidateQueries({ queryKey: ["Coupon"] });
-  };
-
-  const handleClientPost = async () => {
-    await setDoc(doc(db, "coupons", "ABC123"), {
-      code: "ABC123",
-      multiuse: true,
-      createdAt: Date.now(),
-    });
-  };
-
-
-  const testFetch = async () => { 
-    const res = await wrappedFetch(`/api/test`, {
-      method: "POST"
-    });
-  }
+  const isAdmin = userData?.roles.includes("admin");
 
   return (
     <>
-      <div className="w-full flex flex-col gap-2">
+      <div className="w-full bg-gray-100 min-h-screen">
+        <div className="w-full flex flex-col gap-2 max-w-5xl mx-auto py-8">
+          <div className="w-full sticky top-0 flex flex-col gap-2">
+            <HeaderComponent />
+            <ClaimCoupon />
+          </div>
+          <div className="w-full bg-white p-6 rounded-2xl flex flex-row gap-6">
+            <div
+              className={`cursor-pointer hover:text-gray-600 ${
+                currentTab == "leaderboards" && "font-bold underline"
+              }`}
+              onClick={() => setCurrentTab("leaderboards")}
+            >
+              Leaderboards
+            </div>
+            <div
+              className={`cursor-pointer hover:text-gray-600 ${
+                currentTab == "activities" && "font-bold underline"
+              }`}
+              onClick={() => setCurrentTab("activities")}
+            >
+              Activities
+            </div>
+            <div
+              className={`cursor-pointer hover:text-gray-600 ${
+                currentTab == "awards" && "font-bold underline"
+              }`}
+              onClick={() => setCurrentTab("awards")}
+            >
+              Awards
+            </div>
 
+            {isAdmin && (
+              <>
+                <div
+                  className={`cursor-pointer hover:text-gray-600 ${
+                    currentTab == "generator" && "font-bold underline"
+                  }`}
+                  onClick={() => setCurrentTab("generator")}
+                >
+                  Generator
+                </div>
+                <div
+                  className={`cursor-pointer hover:text-gray-600 ${
+                    currentTab == "coupons" && "font-bold underline"
+                  }`}
+                  onClick={() => setCurrentTab("coupons")}
+                >
+                  Coupons
+                </div>
+              </>
+            )}
+          </div>
 
-        {authState=="checking" && <p>Loading...</p>}
+          {currentTab == "leaderboards" && <Leaderboards />}
 
-        {error && <p>{error}</p>}
-        {user && <p>{user.displayName}</p>}
-        {token && <p>{token}</p>}
-        {authState && <p>{authState}</p>}
+          {currentTab == "generator" && <CouponGenerator />}
 
-        {!user && (
-          <button
-            onClick={() => {
-              loginWithGoogle();
-            }}
-            className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-          >
-            Login with Google
-          </button>
-        )}
+          {currentTab == "coupons" && <CouponManager />}
 
-        {authState == "authenticated" && (
-          <button
-            onClick={() => {
-              logout()
-            }}
-            className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-          >
-            Logout
-          </button>
-        )}
-
-        <div className="w-full flex flex-row gap-8 justify-start">
-          <CouponViewer />
-          <CouponForm />
+          {/* <div className="w-full flex flex-row gap-8 justify-start">
+            <CouponForm />
+            <CouponList />
+          </div> */}
         </div>
-
-        <button onClick={handleClaimCoupon}>Claim</button>
-        <button onClick={handleClientPost}>Client post </button>
-        <button onClick={testFetch}>test fetch </button>
-
-        <br />
-
-        <CouponList />
       </div>
     </>
   );

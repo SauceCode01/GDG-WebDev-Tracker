@@ -2,7 +2,7 @@ import { Coupon } from "@/types/Coupon";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { getCoupon, getCoupons } from "../api/coupons";
 
-export function useCouponQuery(code: string) {
+export function useCouponQuery(code?: string) {
   const { data: coupon, ...rest } = useQuery<Coupon>({
     queryKey: ["coupons", code],
     queryFn: async () => {

@@ -25,7 +25,7 @@ export async function PUT(
     }
 
     if (!user) {
-      return NextResponse.json({ message: "User not found" }, { status: 404 });
+      return NextResponse.json({ error: "User not found. Please enter a different email or login with your account." }, { status: 404 });
     }
 
     /**
@@ -38,7 +38,7 @@ export async function PUT(
     }
 
     if (!coupon) {
-      return NextResponse.json({ message: "Coupon not found" }, { status: 404 });
+      return NextResponse.json({ error: "Coupon not found" }, { status: 404 });
     }
 
     /**
@@ -48,7 +48,7 @@ export async function PUT(
     if (!coupon.multiuse) {
       if (coupon.claimedBy && coupon.claimedBy.length > 0) {
         return NextResponse.json(
-          { message: "Coupon already claimed" },
+          { error: "Coupon already claimed" },
           { status: 400 }
         );
       }
@@ -58,7 +58,7 @@ export async function PUT(
     if (coupon.multiuse) {
       if (coupon.claimedBy?.includes(user.uid)) {
         return NextResponse.json(
-          { message: "Coupon already claimed" },
+          { error: "Coupon already claimed" },
           { status: 400 }
         );
       }
@@ -67,7 +67,7 @@ export async function PUT(
     // check if coupon is already expired
     if (coupon.expirationDate && coupon.expirationDate < Date.now()) {
       return NextResponse.json(
-        { message: "Coupon already expired" },
+        { error: "Coupon already expired" },
         { status: 400 }
       );
     }
@@ -105,9 +105,9 @@ export async function PUT(
     await adminDb.collection("coupons").doc(code).set(coupon);
 
     // returning a response
-    return NextResponse.json({ message: "Coupon claimed" }, { status: 200 });
+    return NextResponse.json(coupon, { status: 200 });
   } catch (err) {
     console.error(err);
-    return NextResponse.json({ message: err }, { status: 500 });
+    return NextResponse.json({ error: err }, { status: 500 });
   }
 }

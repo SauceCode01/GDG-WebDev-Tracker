@@ -1,6 +1,6 @@
 import { Coupon } from "@/types/Coupon";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createCoupon } from "../api/coupons";
+import { claimCoupon, createCoupon, voidCoupon } from "../api/coupons";
 
 export function useCreateCouponMutation() {
   const queryClient = useQueryClient();
@@ -21,11 +21,8 @@ export function useVoidCouponMutation()   {
 
   return useMutation({
     mutationFn: async (param: { code: string }) => {
-      const response = await fetch(`/api/coupons/${param.code}/void`, {
-        method: "PUT",
-      });
-      const data = await response.json();
-      return data;
+      const response = voidCoupon(param.code);
+      return response;
     },
     onSuccess: (response, variables) => {
       queryClient.invalidateQueries({ queryKey: ["coupons"] });
@@ -37,12 +34,9 @@ export function useClaimCouponMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (param: { code: string }) => {
-      const response = await fetch(`/api/coupons/${param.code}/claim`, {
-        method: "PUT",
-      });
-      const data = await response.json();
-      return data;
+    mutationFn: async (param: { code: string, email?: string }) => {
+      const response = claimCoupon(param.code, param.email);
+      return response;
     },
     onSuccess: (response, variables) => {
       queryClient.invalidateQueries({ queryKey: ["coupons"] });

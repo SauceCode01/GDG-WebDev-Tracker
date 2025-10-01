@@ -11,11 +11,11 @@ export async function GET(
     const { uid } = await context.params;
     const user = await getUserWithUid(uid);
     if (!user)
-      return NextResponse.json({ message: "User not found" }, { status: 404 });
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
 
-    return NextResponse.json({ user: user, message: "User found" }, { status: 200 });
+    return NextResponse.json(user, { status: 200 });
   } catch (err) {
     console.error(err);
-    return NextResponse.json({ message: err }, { status: 500 });
+    return NextResponse.json({ error: err }, { status: 500 });
   }
 }

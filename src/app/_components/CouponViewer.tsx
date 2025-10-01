@@ -1,29 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useCouponQuery } from "@/lib/queries/couponQueries";
+import { Coupon } from "@/types/Coupon";
+import { useRef, useState } from "react";
 
 export default function CouponViewer() {
-  const [code, setCode] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [coupon, setCoupon] = useState<any | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [code, setCode] = useState<undefined | string>(undefined); 
+  const {coupon, isLoading, error} = useCouponQuery(code);
+
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   const handleSearch = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setCoupon(null);
-    setError(null);
+    e.preventDefault();  
 
-    try {
-      const res = await fetch(`/api/coupons/${code}`);
-      if (!res.ok) throw new Error("Coupon not found");
-
-      const data = await res.json();
-      setCoupon(data);
-    } catch (err: any) {
-      setError(err.message || "Something went wrong");
-    } finally {
-      setLoading(false);
+    if (inputRef.current) {
+      const code = inputRef.current.value; 
+      setCode(code);
     }
   };
 
@@ -34,23 +26,22 @@ export default function CouponViewer() {
       {/* Search Form */}
       <form onSubmit={handleSearch} className="flex gap-2 mb-4">
         <input
-          type="text"
-          value={code}
-          onChange={(e) => setCode(e.target.value)}
+          type="text" 
+          ref={inputRef}
           placeholder="Enter coupon code"
           className="flex-1 border rounded-lg p-2"
         />
         <button
           type="submit"
-          disabled={loading}
+          disabled={isLoading}
           className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
         >
-          {loading ? "Searching..." : "Search"}
+          {isLoading ? "Searching..." : "Search"}
         </button>
       </form>
 
       {/* Error */}
-      {error && <p className="text-red-500 text-sm">{error}</p>}
+      {error && <p className="text-red-500 text-sm">{error.message}</p>}
 
       {/* Coupon Details */}
       {coupon && (
@@ -67,7 +58,7 @@ export default function CouponViewer() {
               {new Date(coupon.expirationDate).toLocaleDateString()}
             </p>
           )}
-          {coupon.claimedBy?.length > 0 && (
+          {coupon.claimedBy && coupon.claimedBy.length > 0 && (
             <p>
               <span className="font-semibold">Claimed by:</span>{" "}
               {coupon.claimedBy.join(", ")}

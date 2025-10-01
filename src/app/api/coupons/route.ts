@@ -7,16 +7,16 @@ export async function POST(req: NextRequest) {
   try {
     const user = await getUser(req);
     if (!user)
-      return NextResponse.json({ message: "Unauthenticated" }, { status: 404 });
+      return NextResponse.json({ error: "Unauthenticated" }, { status: 404 });
 
     const isAdmin = isRole(user, "admin");
     if (!isAdmin)
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const coupon = (await req.json()) as Coupon;
     if (!coupon) {
       return NextResponse.json(
-        { message: "Missing coupon data" },
+        { error: "Missing coupon data" },
         { status: 400 }
       );
     }
@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(data, { status: 200 });
   } catch (err) {
     console.error(err);
-    return NextResponse.json({ message: err }, { status: 500 });
+    return NextResponse.json({ error: err }, { status: 500 });
   }
 }
 

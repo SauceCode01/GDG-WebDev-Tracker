@@ -2,50 +2,49 @@
 
 import { createCoupon } from "@/lib/api/coupons";
 import { useCreateCouponMutation } from "@/lib/queries/couponMutations";
+import { Coupon } from "@/types/Coupon";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import { CouponCard } from "./CouponCard";
 
-export default function CouponForm() {
+export default function CouponGenerator() {
   const [multiuse, setMultiuse] = useState(false);
   const [points, setPoints] = useState<Record<string, number>>({});
   const [expirationDate, setExpirationDate] = useState<number>(0);
-  const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<string | null>(null);
 
-  const queryClient = useQueryClient();
-
+  const [createdCoupon, setCreatedCoupon] = useState<Coupon | null>(null);
 
   const createCouponMutation = useCreateCouponMutation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
 
-    try { 
- 
-      const coupon = await createCouponMutation.mutateAsync({coupon:{
-        multiuse,
-        points,
-        expirationDate: expirationDate
-          || Date.now() 
-      }});
- 
+    try {
+      const coupon = await createCouponMutation.mutateAsync({
+        coupon: {
+          multiuse,
+          points,
+          expirationDate: expirationDate || undefined,
+        },
+      });
+
       setResult(
-        coupon?.code ? `Coupon created: ${coupon.code}` : "Failed to create coupon"
+        coupon?.code
+          ? `Coupon created: ${coupon.code}`
+          : "Failed to create coupon"
       );
- 
+      setCreatedCoupon(coupon);
     } catch (err) {
       console.error(err);
       setResult("Error creating coupon");
-    } finally {
-      setLoading(false);
     }
   };
 
   return (
     <form
       onSubmit={handleSubmit}
-      className="max-w-md p-6 bg-white rounded-2xl shadow"
+      className="w-full p-6 bg-white rounded-2xl shadow"
     >
       <h2 className="text-xl font-bold mb-4">Create a Coupon</h2>
 
@@ -62,11 +61,32 @@ export default function CouponForm() {
 
       {/* Points (simple for demo: one field for "default" points) */}
       <div className="mb-4">
-        <label className="block text-sm font-medium mb-1">Points</label>
+        <label className="block text-sm font-medium mb-1">
+          Frontend Points
+        </label>
         <input
           type="number"
           placeholder="Enter points"
-          onChange={(e) => setPoints({ default: Number(e.target.value) })}
+          onChange={(e) =>
+            setPoints((p) => ({
+              ...p,
+              "Frontend Points": Number(e.target.value),
+            }))
+          }
+          className="w-full border rounded-lg p-2"
+        />
+      </div>
+      <div className="mb-4">
+        <label className="block text-sm font-medium mb-1">Backend Points</label>
+        <input
+          type="number"
+          placeholder="Enter points"
+          onChange={(e) =>
+            setPoints((p) => ({
+              ...p,
+              "Backend Points": Number(e.target.value),
+            }))
+          }
           className="w-full border rounded-lg p-2"
         />
       </div>
@@ -79,7 +99,9 @@ export default function CouponForm() {
         <input
           type="date"
           value={expirationDate}
-          onChange={(e) => setExpirationDate(new Date(e.target.value).getTime())}
+          onChange={(e) =>
+            setExpirationDate(new Date(e.target.value).getTime())
+          }
           className="w-full border rounded-lg p-2"
         />
       </div>
@@ -92,7 +114,20 @@ export default function CouponForm() {
         {createCouponMutation.isPending ? "Creating..." : "Create Coupon"}
       </button>
 
-      {result && <p className="mt-4 text-center text-sm">{result}</p>}
+      {result && (
+        <>
+          <p className="mt-4 text-center text-sm">{result}</p>
+
+{createdCoupon && 
+          <CouponCard coupon={createdCoupon} /> 
+       }
+        </>
+      )}
+      {createCouponMutation.isError && (
+        <p className="mt-4 text-center text-sm text-red-500">
+          {createCouponMutation.error.message}
+        </p>
+      )}
     </form>
   );
 }

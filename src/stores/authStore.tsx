@@ -11,6 +11,7 @@ import {
 } from "firebase/auth";
 import { auth } from "@/lib/firebase/firebase"; 
 import { getAuthErrorMessage } from "@/lib/firebase/firebaseErrors";
+ 
 
 type AuthState = "checking" | "unauthenticated" | "authenticated";
 
@@ -18,7 +19,7 @@ type AuthStore = {
   user: User | null;
   token: string | null;
   authState: AuthState;
-  error: string | null;
+  error: string | null; 
 
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string) => Promise<void>;

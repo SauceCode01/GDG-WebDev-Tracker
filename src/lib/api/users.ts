@@ -7,6 +7,11 @@ export const getUser = async (uid: string) => {
 
   const data = await res.json();
   console.log(data);
+
+  if (!res.ok) {
+    throw new Error(data.error);
+  }
+
   return data;
 };
 
@@ -21,5 +26,10 @@ export const getUsers = async (limit:number, lastUid?: string) => {
 
   const data = await res.json();
   console.log(data);
+
+  if (!res.ok) {
+    throw new Error(data.error);
+  }
+  
   return data;
 };

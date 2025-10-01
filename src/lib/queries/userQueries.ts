@@ -3,7 +3,7 @@ import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { User } from "@/types/User"; 
 import { getUser, getUsers } from "../api/users";
 
-export function useUserQuery(uid: string) {
+export function useUserQuery(uid?: string) {
   const { data: user, ...rest } = useQuery<User>({
     queryKey: ["coupons", uid],
     queryFn: async () => {
@@ -18,7 +18,7 @@ export function useUserQuery(uid: string) {
 }
 
 
-export function useInfiniteCouponQuery() {
+export function useInfiniteUserQuery() {
   const { data, ...rest } = useInfiniteQuery<User[], Error>({
     queryKey: ["users"],
     queryFn: async ({ pageParam }) => {
