@@ -24,33 +24,38 @@ export const HeaderComponent = () => {
       )}
       {authState == "authenticated" && (
         <>
-          <div className="w-full flex flex-row gap-2">
+          <div className="w-full flex flex-col md:flex-row gap-2">
             <div className="w-fit px-4 py-2 rounded-full ">
-            Hello: {user?.displayName}
-          </div>
-          <div className="w-fit px-4 py-2 rounded-full ">
-            Roles: {JSON.stringify(userData?.roles)}
-          </div>
-          <div
-            className="w-fit px-4 py-2 rounded-full bg-blue-300"
-            onClick={() => {
-              logout();
-            }}
-          >
-            Logout
-          </div>
+              Hello: {user?.displayName}
+            </div>
+            <div className="w-fit px-4 py-2 rounded-full ">
+              Roles: {JSON.stringify(userData?.roles)}
+            </div>
+            <div
+              className="w-fit px-4 py-2 rounded-full bg-blue-300"
+              onClick={() => {
+                logout();
+              }}
+            >
+              Logout
+            </div>
           </div>
 
           {userData && (
-            <div className="w-full flex flex-row flex-wrap gap-2">
-              {Object.entries(userData.individualPoints || {}).map(([k, v]) => (
-                <>
-                  <div className="py-2 px-4 w-fit text-xs bg-amber-200 rounded-full shadow">
-                    {k}: {v}
-                  </div>
-                </>
-              ))}
-            </div>
+            <>
+              <div className="w-full text-2xl font-bol">Your points</div> <hr />{" "}
+              <div className="w-full flex flex-row flex-wrap gap-2">
+                {Object.entries(userData.individualPoints || {}).map(
+                  ([k, v]) => (
+                    <>
+                      <div className="py-2 px-4 w-fit text-xs bg-amber-200 rounded-full shadow">
+                        {k}: {v}
+                      </div>
+                    </>
+                  )
+                )}
+              </div>
+            </>
           )}
         </>
       )}

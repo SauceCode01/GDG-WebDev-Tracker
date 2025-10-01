@@ -23,11 +23,9 @@ export const HomePage = () => {
     <>
       <div className="w-full bg-gray-100 min-h-screen">
         <div className="w-full flex flex-col gap-2 max-w-5xl mx-auto py-8">
-          <div className="w-full sticky top-0 flex flex-col gap-2">
-            <HeaderComponent />
-            <ClaimCoupon />
-          </div>
-          <div className="w-full bg-white p-6 rounded-2xl flex flex-row gap-6">
+          <HeaderComponent />
+          <ClaimCoupon />
+          <div className="w-full bg-white p-6 rounded-2xl flex flex-col md:flex-row gap-6">
             <div
               className={`cursor-pointer hover:text-gray-600 ${
                 currentTab == "leaderboards" && "font-bold underline"

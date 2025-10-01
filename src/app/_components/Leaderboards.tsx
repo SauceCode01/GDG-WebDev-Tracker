@@ -26,8 +26,8 @@ export default function Leaderboards() {
   };
 
   return (
-    <div className=" w-full bg-white rounded-2xl shadow p-6">
-      <table className="w-full">
+    <div className=" w-full bg-white rounded-2xl shadow p-6 overflow-x-auto text-xs">
+      <table className="w-full min-w-3xl">
         <tr>
           <th className="text-center p-2 ">Developer</th>
           <th className="text-center p-2 ">Email</th>
@@ -44,11 +44,11 @@ export default function Leaderboards() {
                   alt=""
                   className="w-12 h-12 rounded-full"
                 />
-                <p className=" whitespace-nowrap  "> {user.displayName}</p>
+                <p className="  "> {user.displayName}</p>
               </div>
             </td>
             <td className="">
-              <div className="text-center   whitespace-nowrap  p-2">
+              <div className="text-center    p-2">
                 {" "}
                 {user.email}
               </div>

@@ -57,7 +57,7 @@ export default function ClaimCoupon() {
       <h2 className="text-xl font-bold mb-4">Redeem Coupon</h2>
 
       {/* Search Form */}
-      <div className="flex gap-2 mb-4">
+      <div className="flex flex-col md:flex-row gap-2 mb-4">
         <input
           type="text"
           ref={codeRef}
