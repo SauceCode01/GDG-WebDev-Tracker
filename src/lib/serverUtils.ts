@@ -74,7 +74,7 @@ export async function getUser(req: NextRequest): Promise<User | null> {
  * Fetches a user with a specific email
  */
 export async function getUserWithEmail(email: string): Promise<User | null> {
-  const userRef = adminDb.collection("users").where("email", "==", email);
+  const userRef = adminDb.collection("users").where("email", "==", email).limit(1);
   const userSnap = await userRef.get();
 
   if (!userSnap.empty) {

@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import ClaimCoupon from "./_components/ClaimCoupon";
 import Leaderboards from "./_components/Leaderboards";
-import { HeaderComponent } from "./_components/HeaderComponent";
+import { ProfileBlock } from "./_components/ProfileBlock";
 import { useAuthStore } from "@/stores/authStore";
 import { useUserQuery } from "@/lib/queries/userQueries";
 import CouponGenerator from "./_components/CouponGenerator";
@@ -22,8 +22,8 @@ export const HomePage = () => {
   return (
     <>
       <div className="w-full bg-gray-100 min-h-screen">
-        <div className="w-full flex flex-col gap-2 max-w-5xl mx-auto py-8">
-          <HeaderComponent />
+        <div className="w-full flex flex-col gap-2 max-w-3xl mx-auto py-8">
+          <ProfileBlock />
           <ClaimCoupon />
           <div className="w-full bg-white p-6 rounded-2xl flex flex-col md:flex-row gap-6">
             <div
