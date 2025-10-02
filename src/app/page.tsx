@@ -8,6 +8,8 @@ import { useAuthStore } from "@/stores/authStore";
 import { useUserQuery } from "@/lib/queries/userQueries";
 import CouponGenerator from "./_components/CouponGenerator";
 import CouponManager from "./_components/CouponManager";
+import { LoginToRedeemBlock } from "./_components/LoginToRedeemBlock";
+import { MainBlock } from "./_components/MainBlock";
 
 export const HomePage = () => {
   const [currentTab, setCurrentTab] = useState("leaderboards");
@@ -22,9 +24,17 @@ export const HomePage = () => {
   return (
     <>
       <div className="w-full bg-gray-100 min-h-screen">
-        <div className="w-full flex flex-col gap-2 max-w-3xl mx-auto py-8">
+        <div className="w-full flex flex-col gap-2 max-w-3xl p-0 md:py-4 mx-auto">
           <ProfileBlock />
-          <ClaimCoupon />
+          {authState === "unauthenticated" && <LoginToRedeemBlock />}
+
+          {authState === "authenticated" && <ClaimCoupon />}
+
+
+          <MainBlock/>
+
+
+
           <div className="w-full bg-white p-6 rounded-2xl flex flex-col md:flex-row gap-6">
             <div
               className={`cursor-pointer hover:text-gray-600 ${

@@ -2,7 +2,9 @@
 
 import { useUserQuery } from "@/lib/queries/userQueries";
 import { useAuthStore } from "@/stores/authStore";
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { FaBars } from "react-icons/fa";
+import { Block } from "./atoms/Block";
 
 export const ProfileBlock = () => {
   const { user, token, authState, error, loginWithGoogle, logout } =
@@ -10,41 +12,105 @@ export const ProfileBlock = () => {
 
   const { user: userData } = useUserQuery(user?.uid);
 
+  const menuRef = useRef<HTMLDivElement>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setMenuOpen(false);
+      }
+    }
+    if (menuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [menuOpen]);
+
   return (
     <>
-      <div className="w-full relative shadow flex overflow-hidden flex-row md:rounded-2xl bg-white p-2 md:p-4 z-0">
+      <Block>
         {/* banner */}
         <div className="w-full h-[50%] absolute top-0 left-0 bg-violet-800 rounded-br-2xl rounded-bl-2xl z-[-1] overflow-clip">
-
-          <img src={"/banner.png"} className="object-cover object-center w-full" />
-
+          <img
+            src={"/banner.png"}
+            className="object-cover object-center w-full"
+          />
         </div>
 
-{/* avatar */}
-        <div className="w-[8em] md:w-[12em] m-2 rounded-full aspect-square bg-orange-200 overflow-clip relative">
-          <img src={"/sparky.png"} className="object-cover object-center" />
-        </div>
-
-{/* name & email */}
-        <div className="flex flex-col justify-center items-start gap-4">
-          <div className="text-4xl font-bold opacity-0">
-            <div className="text-2xl md:text-4xl font-bold">
-              Sparky Batumbakal
-            </div>
-            <div className="text-sm md:text-lg ">
-              gdg.pupmnl@gmail.com
+        {/* avatar and infos */}
+        <div className="w-full flex-row flex">
+          {/* avatar */}
+          <div className="w-[6em] sm:w-[8em] md:w-[12em] m-2  relative flex justify-center items-center">
+            <div className="w-full rounded-full aspect-square bg-orange-200 overflow-clip relative ">
+              <img
+                src={userData?.displayImgUrl ?? "/sparky.png"}
+                className="object-cover object-center w-full h-full"
+              />
             </div>
           </div>
-          <div className=" flex flex-col gap-0">
-            <div className="text-2xl md:text-4xl font-bold">
-              Sparky Batumbakal
+          {/* name & email */}
+          <div className="flex flex-col justify-center items-start gap-4">
+            <div className="text-4xl font-bold opacity-0">
+              <div className="text-2xl md:text-4xl font-bold">
+                {userData?.displayName ?? "Sparky Batumbakal"}
+              </div>
+              <div className="text-sm md:text-lg ">
+                {userData?.email ?? "gdg.pupmnl@gmail.com"}
+              </div>
             </div>
-            <div className="text-sm md:text-lg ">
-              gdg.pupmnl@gmail.com
+            <div className=" flex flex-col gap-0">
+              <div className="text-2xl md:text-4xl font-bold">
+                {userData?.displayName ?? "Sparky Batumbakal"}
+              </div>
+              <div className="text-sm md:text-lg ">
+                {userData?.email ?? "gdg.pupmnl@gmail.com"}
+              </div>
             </div>
           </div>
         </div>
-      </div>
+
+        {/* Burger Menu */}
+        <div className=" absolute top-5 right-5" ref={menuRef}>
+          <button
+            className="p-2 rounded-full hover:bg-gray-100"
+            onClick={() => setMenuOpen((prev) => !prev)}
+          >
+            <FaBars size={20} />
+          </button>
+
+          {menuOpen && (
+            <div className="absolute right-0 mt-2 w-60 rounded-md bg-white shadow-lg border border-gray-200 z-10">
+              {authState === "unauthenticated" && (
+                <div
+                  onClick={() => {
+                    loginWithGoogle();
+                    setMenuOpen(false);
+                  }}
+                  className="px-4 py-2 cursor-pointer hover:bg-gray-100"
+                >
+                  Login with Google
+                </div>
+              )}
+              {authState === "authenticated" && (
+                <div
+                  onClick={() => {
+                    logout();
+                    setMenuOpen(false);
+                  }}
+                  className="px-4 py-2 cursor-pointer hover:bg-gray-100"
+                >
+                  Logout
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </Block>
     </>
   );
 
