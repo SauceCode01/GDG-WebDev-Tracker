@@ -5,6 +5,7 @@ import { useAuthStore } from "@/stores/authStore";
 import React, { useEffect, useRef, useState } from "react";
 import { FaBars } from "react-icons/fa";
 import { Block } from "./atoms/Block";
+import { SkeletonBlock } from "./SkeletonBlock";
 
 export const ProfileBlock = () => {
   const { user, token, authState, error, loginWithGoogle, logout } =
@@ -31,6 +32,11 @@ export const ProfileBlock = () => {
     };
   }, [menuOpen]);
 
+  if (authState == "checking" || (authState == "authenticated" && !userData))
+    return (
+  <SkeletonBlock/>
+    );
+
   return (
     <>
       <Block>
@@ -55,12 +61,12 @@ export const ProfileBlock = () => {
           </div>
           {/* name & email */}
           <div className="flex flex-col justify-center items-start gap-4">
-            <div className="text-4xl font-bold opacity-0">
-              <div className="text-2xl md:text-4xl font-bold">
-                {userData?.displayName ?? "Sparky Batumbakal"}
-              </div>
-              <div className="text-sm md:text-lg ">
+            <div className="text-4xl font-bold">
+              <div className="text-sm md:text-lg  opacity-0">
                 {userData?.email ?? "gdg.pupmnl@gmail.com"}
+              </div>
+              <div className="text-2xl md:text-4xl font-bold text-white">
+                GDG PUP
               </div>
             </div>
             <div className=" flex flex-col gap-0">
