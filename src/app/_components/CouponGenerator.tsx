@@ -8,7 +8,7 @@ import type { Coupon } from "@/types/Coupon";
 export default function CouponGenerator()  {
   // the mutation hook may expose different status props depending on your implementation
   // we coerce it to `any` to remain compatible with a variety of hook shapes.
-  const mutation = useCreateCouponMutation() as any;
+  const mutation = useCreateCouponMutation() ;
   const { mutateAsync } = mutation;
 
   const [multiuse, setMultiuse] = useState<boolean>(false);
@@ -19,7 +19,7 @@ export default function CouponGenerator()  {
   const [createdCoupon, setCreatedCoupon] = useState<Coupon | null>(null);
 
   // support both `isPending` (custom hooks) and `isLoading` (react-query)
-  const isMutating = Boolean(mutation?.isPending || mutation?.isLoading);
+  const isMutating = Boolean(mutation?.isPending || mutation?.isPending);
   const isError = Boolean(mutation?.isError);
   const errorMessage = mutation?.error?.message ?? null;
 
@@ -45,9 +45,9 @@ export default function CouponGenerator()  {
       const coupon = await mutateAsync(payload);
       setCreatedCoupon(coupon ?? null);
       setResult(coupon?.code ? `Coupon created: ${coupon.code}` : "Coupon created");
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      setResult(err?.message ?? "Error creating coupon");
+      setResult( "Error creating coupon");
     }
   };
 

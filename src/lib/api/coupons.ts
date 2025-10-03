@@ -76,7 +76,7 @@ export const voidCoupon = async (code: string) => {
   return data
 }
 
-export const createCoupon = async (coupon: Coupon)    => {
+export const createCoupon = async (coupon: Coupon) : Promise<Coupon>    => {
   const res = await wrappedFetch(`/api/coupons`, {
     method: "POST",
     body: JSON.stringify(coupon),
