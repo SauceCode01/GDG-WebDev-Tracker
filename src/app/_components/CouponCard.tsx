@@ -7,8 +7,10 @@ export const CouponCard = ({ coupon }: { coupon: Coupon }) => {
   if (!coupon) return null;
 
   return (
-    <div className="mt-4 p-4 border rounded-lg bg-gray-50">
-      <h3 className="font-semibold text-lg mb-2">Coupon Details</h3>
+    <>
+      <h2 className="text-base font-bold mb-4 flex flex-row justify-between items-center">
+        <span>Coupon Details:</span> <span>{coupon.code?.toUpperCase()}</span>
+      </h2>
       <dl className="space-y-2 text-sm">
         <div className="flex justify-between">
           <dt className="font-medium">Code:</dt>
@@ -18,19 +20,6 @@ export const CouponCard = ({ coupon }: { coupon: Coupon }) => {
         <div className="flex justify-between">
           <dt className="font-medium">Multi-use:</dt>
           <dd>{coupon.multiuse ? "Yes" : "No"}</dd>
-        </div>
-
-        <div>
-          <dt className="font-medium">Points:</dt>
-          <dd>
-            <ul className="list-disc list-inside">
-              {Object.entries(coupon.points).map(([k, v]) => (
-                <li key={k}>
-                  {k}: {v}
-                </li>
-              ))}
-            </ul>
-          </dd>
         </div>
 
         <div className="flex justify-between">
@@ -58,7 +47,18 @@ export const CouponCard = ({ coupon }: { coupon: Coupon }) => {
             <dd>{new Date(coupon.claimedAt).toLocaleString()}</dd>
           </div>
         )}
-
+        <div>
+          <dt className="font-medium">Points:</dt>
+          <dd>
+            <ul className="list-disc list-inside">
+              {Object.entries(coupon.points).map(([k, v]) => (
+                <li key={k}>
+                  {k}: {v}
+                </li>
+              ))}
+            </ul>
+          </dd>
+        </div>
         {coupon.claimedBy && coupon.claimedBy.length > 0 && (
           <div>
             <dt className="font-medium">Claimed By:</dt>
@@ -72,6 +72,6 @@ export const CouponCard = ({ coupon }: { coupon: Coupon }) => {
           </div>
         )}
       </dl>
-    </div>
+    </>
   );
 };

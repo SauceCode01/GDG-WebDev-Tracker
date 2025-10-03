@@ -6,11 +6,17 @@ import { useAuthStore } from "@/stores/authStore";
 import { Coupon } from "@/types/Coupon";
 import { useRef, useState } from "react";
 import { CouponCard } from "./CouponCard";
+import { Block } from "./atoms/Block";
+import { Popup } from "./Popup";
+import { CouponClaimed } from "./CouponClaimed";
 
 export default function ClaimCoupon() {
   const [showValue, setShowValue] = useState(false);
   const [code, setCode] = useState<undefined | string>(undefined);
   const { authState } = useAuthStore();
+
+  
+    const [popupOpen, setPopupOpen] = useState(false);
 
   const claimCouponMutation = useClaimCouponMutation();
   const {
@@ -29,14 +35,9 @@ export default function ClaimCoupon() {
     if (codeRef.current) {
       const code = codeRef.current.value;
 
-      if (authState === "unauthenticated") {
-        if (emailRef.current) {
-          const email = emailRef.current.value;
-          claimCouponMutation.mutate({ code, email });
-        }
-      } else {
-        claimCouponMutation.mutate({ code });
-      }
+     
+        claimCouponMutation.mutate({ code },
+        { onSuccess: () => setPopupOpen(true) });
     }
   };
 
@@ -53,95 +54,60 @@ export default function ClaimCoupon() {
   };
 
   return (
-    <div className="w-full p-6 bg-white rounded-2xl shadow">
-      <h2 className="text-xl font-bold mb-4">Redeem Coupon</h2>
-
+    <Block> 
+      <h2 className="text-base font-bold mb-4">Redeem Coupon</h2>
       {/* Search Form */}
-      <div className="flex flex-col md:flex-row gap-2 mb-4">
+      <div className="flex flex-col md:flex-row gap-4 mb-4">
         <input
           type="text"
           ref={codeRef}
           placeholder="Enter coupon code"
-          className="flex-1 border rounded-lg p-2"
+          className="flex-2 border rounded-lg p-2"
         />
+ 
+        <div className="w-full flex flex-2 flex-row gap-4">
+          <button
+            onClick={handleClaim}
+            disabled={claimCouponMutation.isPending}
+            className="bg-[#facc15] flex-1 text-black font-bold cursor-pointer px-4 py-2 rounded-lg hover:shadow-sm hover:bg-amber-200"
+          >
+            {claimCouponMutation.isPending ? "Redeeming..." : "Redeem"}
+          </button>
 
-        {authState === "unauthenticated" && (
-          <input
-            type="email"
-            ref={emailRef}
-            placeholder="Enter email"
-            className="flex-1 border rounded-lg p-2"
-          />
-        )}
-
-        <button
-          onClick={handleClaim}
-          disabled={claimCouponMutation.isPending}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-        >
-          {claimCouponMutation.isPending ? "Redeeming..." : "Redeem"}
-        </button>
-
-        <button
-          onClick={handleCheck}
-          disabled={couponLoading}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-        >
-          {couponLoading ? "Checking..." : "Check value"}
-        </button>
+          <button
+            onClick={handleCheck}
+            disabled={couponLoading}
+            className="bg-none border-2 flex-1 border-black text-black cursor-pointer font-bold px-4 py-2 rounded-lg hover:shadow-sm hover:bg-amber-200"
+          >
+            {couponLoading ? "Checking..." : "Check value"}
+          </button>
+        </div>
       </div>
-
       {/* Pending claim */}
       {!showValue && claimCouponMutation.isPending && (
         <p className="text-blue-500 text-sm">Claiming...</p>
       )}
-
       {/* Error */}
       {!showValue && claimCouponMutation.isError && (
         <p className="text-red-500 text-sm">
           {claimCouponMutation.error.message}
         </p>
-      )}
-
+      )} 
       {/* Coupon Details */}
-      {!showValue && claimCouponMutation.data && (
-        <div className="mt-4 border rounded-lg p-4 bg-gray-50">
-          <h1>You Claim The following Coupon</h1>
-          <p>
-            <span className="font-semibold">Code:</span>{" "}
-            {claimCouponMutation.data.code}
-          </p>
-          <p>
-            <span className="font-semibold">Multi-use:</span>{" "}
-            {claimCouponMutation.data.multiuse ? "Yes" : "No"}
-          </p>
-          <p>
-            <span className="font-semibold">Points:</span>{" "}
-            {Object.entries(claimCouponMutation.data.points || {})
-              .map(([k, v]) => `${k}: ${v}`)
-              .join(", ")}
-          </p>
-          {claimCouponMutation.data.expirationDate && (
-            <p>
-              <span className="font-semibold">Expires:</span>{" "}
-              {new Date(
-                claimCouponMutation.data.expirationDate
-              ).toLocaleDateString()}
-            </p>
-          )}
-          {claimCouponMutation.data.claimedBy &&
-            claimCouponMutation.data.claimedBy.length > 0 && (
-              <p>
-                <span className="font-semibold">Claimed by:</span>{" "}
-                {claimCouponMutation.data.claimedBy.join(", ")}
-              </p>
-            )}
-        </div>
+      {showValue && couponValue && (
+        <>
+          <CouponCard coupon={couponValue} />
+        </>
       )}
+      <Popup
+              isOpen={popupOpen}
+              onClose={() => setPopupOpen(false)}
+              width="w-1/2"
+              height="h-[400px]"
+            >
+              <CouponClaimed couponData={claimCouponMutation.data} />
+            </Popup>
+    </Block>
 
-      {/* Coupon Details */}
-      {showValue && couponValue && 
-      <><CouponCard coupon={couponValue} /></>}
-    </div>
   );
 }

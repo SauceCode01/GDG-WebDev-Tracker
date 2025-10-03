@@ -6,7 +6,7 @@ import { wrappedFetch } from "../utils";
  */
 
 export const getCoupon = async (code: string) => {
-  const res = await wrappedFetch(`/api/coupons/${code}`, {
+  const res = await wrappedFetch(`/api/coupons/${code.toLowerCase()}`, {
     method: "GET",
   });
 
@@ -43,8 +43,8 @@ export const getCoupons = async (limit: number, lastCode?: string) => {
 
 export const claimCoupon = async (code: string, email?: string) => {
   const url = email
-    ? `/api/coupons/${code}/claim?email=${encodeURIComponent(email)}`
-    : `/api/coupons/${code}/claim`;
+    ? `/api/coupons/${code.toLowerCase()}/claim?email=${encodeURIComponent(email)}`
+    : `/api/coupons/${code.toLowerCase() || "---"}/claim`;
 
   const res = await wrappedFetch(url, {
     method: "PUT",
