@@ -35,6 +35,10 @@ export const HomePage = () => {
 
 
 
+          <br/><br/><br/><br/><br/><br/><br/><br/>
+
+
+{/* 
           <div className="w-full bg-white p-6 rounded-2xl flex flex-col md:flex-row gap-6">
             <div
               className={`cursor-pointer hover:text-gray-600 ${
@@ -87,7 +91,7 @@ export const HomePage = () => {
 
           {currentTab == "generator" && <CouponGenerator />}
 
-          {currentTab == "coupons" && <CouponManager />}
+          {currentTab == "coupons" && <CouponManager />} */}
 
           {/* <div className="w-full flex flex-row gap-8 justify-start">
             <CouponForm />

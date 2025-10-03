@@ -4,7 +4,53 @@ import { useVoidCouponMutation } from "@/lib/queries/couponMutations";
 import { useInfiniteCouponQuery } from "@/lib/queries/couponQueries";
 import { useInfiniteUserQuery } from "@/lib/queries/userQueries";
 import { Coupon } from "@/types/Coupon";
+import { User } from "@/types/User";
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
+
+//  ${
+//           rank == 1
+//             ? "bg-violet-800 text-white"
+//             : rank == 2
+//             ? "bg-violet-700 text-white"
+//             : rank == 3
+//             ? "bg-violet-600 text-white"
+//             : ""
+//         }
+
+const RankingRow = ({ rank, user }: { rank: number; user?: User }) => {
+  return (
+    <div className="flex flex-row items-center group">
+      {/* Rank */}
+      <div
+        className={`w-10 h-10 rounded-full flex items-center justify-center font-extrabold `}
+      >
+        {rank}
+      </div>
+
+      {/* User strip */}
+      <div className="ml-6 flex flex-row items-center flex-1 rounded-full border-2 border-gray-300 shadow-sm shadow-gray-300 relative px-4 py-2 bg-white hover:bg-amber-100   transition-all duration-200 group-hover:border-black">
+        {/* Avatar (overlaps to the left) */}
+        <div className="w-12 sm:w-16 aspect-square rounded-full overflow-hidden absolute -left-4 top-1/2 -translate-y-1/2 shadow-sm shadow-gray-300">
+          <img
+            src={user?.displayImgUrl ?? "/sparky.png"}
+            alt="user avatar"
+            className="w-full h-full object-cover"
+          />
+        </div>
+
+        {/* Name */}
+        <div className="ml-8 sm:ml-12 text-xs sm:text-base font-bold">
+          {user?.displayName ?? "Sparky Batumbakal"}
+        </div>
+
+        {/* Points (right aligned) */}
+        <div className="ml-auto text-xs sm:text-base font-semibold text-violet-700">
+          {`${user?.totalPoints ?? 0}`}
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default function Leaderboards() {
   const queryClient = useQueryClient();
@@ -26,70 +72,33 @@ export default function Leaderboards() {
   };
 
   return (
-    <div className=" w-full bg-white rounded-2xl shadow p-6 overflow-x-auto text-xs">
-      <table className="w-full min-w-3xl">
-        <tr>
-          <th className="text-center p-2 ">Developer</th>
-          <th className="text-center p-2 ">Email</th>
-          <th className="text-center p-2">Badges</th>
-          <th className="text-center p-2">Points</th>
-        </tr>
-
-        {users.map((user) => (
-          <tr key={user.uid} className="  ">
-            <td className="">
-              <div className=" flex flex-row gap-2 items-center justify-start  p-2 w-full h-full">
-                <img
-                  src={user.displayImgUrl}
-                  alt=""
-                  className="w-12 h-12 rounded-full"
-                />
-                <p className="  "> {user.displayName}</p>
-              </div>
-            </td>
-            <td className="">
-              <div className="text-center    p-2">
-                {" "}
-                {user.email}
-              </div>
-            </td>
-            <td className="">
-              <div className=" p-2 flex flex-row flex-wrap justify-start items-center gap-1">
-                {Object.entries(user.individualPoints || {}).map(([k, v]) => (
-                  <>
-                    <div className="py-2 px-4 w-fit text-xs bg-amber-200 rounded-full shadow">
-                      {k}: {v}
-                    </div>
-                  </>
-                ))}
-              </div>
-            </td>
-            <td className="">
-              <div className="text-center  p-2 w-full">{user.totalPoints}</div>
-            </td>
-          </tr>
+    <>
+      <div className="flex flex-col gap-6 py-6">
+        {/* ranking row */}
+        {users.map((user, index) => (
+          <RankingRow key={user.uid} rank={index + 1} user={user} />
         ))}
-      </table>
-      <div className="w-full p-4 flex flex-row justify-center">
-        {hasNextPage && !isFetchingNextPage && (
-          <div
-            className="w-fit bg-gray-800 text-white rounded-2xl p-2 px-4"
-            onClick={() => fetchNextPage()}
-          >
-            load more
-          </div>
-        )}
 
-        {(isLoading || isFetchingNextPage) && (
-          <div className="text-gray-500">loading...</div>
-        )}
+        <div className="w-full flex flex-row justify-center">
+          {hasNextPage && !isFetchingNextPage && (
+            <div
+              className="w-fit bg-gray-800 cursor-pointer text-white rounded-full p-2 px-6"
+              onClick={() => fetchNextPage()}
+            >
+              load more
+            </div>
+          )}
+          {(isLoading || isFetchingNextPage) && (
+            <div className="text-gray-500">loading...</div>
+          )}
 
-        {error && <p className="text-red-500">{error.message}</p>}
+          {error && <p className="text-red-500">{error.message}</p>}
 
-        {!hasNextPage && !isFetchingNextPage && !isLoading && (
-          <p className="text-gray-500">No more coupons</p>
-        )}
+          {!hasNextPage && !isFetchingNextPage && !isLoading && (
+            <p className="text-gray-500">-- no more users --</p>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }

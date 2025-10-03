@@ -25,5 +25,9 @@ export const wrappedFetch = async (
   });
 };
 
+export const isAuthenticated = async () =>
+  (await getAuth().currentUser) !== null;
 
-export const isAuthenticated = async () => await getAuth().currentUser !== null;
+export const arrayIntersecting = (arr1: any[], arr2: any[]): boolean => {
+  return arr1.some((item) => arr2.includes(item));
+};
